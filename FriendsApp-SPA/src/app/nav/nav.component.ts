@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-nav',
@@ -8,12 +9,25 @@ import { Component, OnInit } from '@angular/core';
 export class NavComponent implements OnInit {
   model: any = {};
 
-  constructor() { }
+  constructor(private authSvr: AuthService) { }
 
   ngOnInit() {
   }
 
   login() {
-    console.log(this.model);
+    this.authSvr.login(this.model).subscribe(next => {
+      console.log('logged in successfully');
+    }, error=> {
+      console.warn('fail to login successfully');
+    });
   }
+
+  loggedIn() {
+    return !!localStorage.getItem('token');
+  }
+
+  logout(){
+    localStorage.removeItem('token');
+  }
+
 }
