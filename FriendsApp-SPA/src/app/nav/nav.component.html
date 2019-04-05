@@ -19,7 +19,7 @@
 
   <div *ngIf="loggedIn(); else loginFormContainer" class="dropdown">
     <a class="dropdown-toggle text-light">
-      Welcome User
+      Welcome {{authSvr.decodedToken?.unique_name | titlecase}}
     </a>
 
     <div class="dropdown-menu">
