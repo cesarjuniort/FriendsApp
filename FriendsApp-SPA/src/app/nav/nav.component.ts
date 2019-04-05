@@ -18,7 +18,7 @@ export class NavComponent implements OnInit {
     this.authSvr.login(this.model).subscribe(next => {
       console.log('logged in successfully');
     }, error=> {
-      console.warn('fail to login successfully');
+      console.log('fail to login successfully', error);
     });
   }
 
