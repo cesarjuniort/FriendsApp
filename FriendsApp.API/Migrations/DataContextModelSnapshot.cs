@@ -30,7 +30,7 @@ namespace FriendsApp.API.Migrations
 
             modelBuilder.Entity("FriendsApp.API.Models.User", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<byte[]>("PasswordHash");

@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FriendsApp.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190329000017_AddedUserEntity")]
-    partial class AddedUserEntity
+    [Migration("20190406012757_dbRebuild")]
+    partial class dbRebuild
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,7 +32,7 @@ namespace FriendsApp.API.Migrations
 
             modelBuilder.Entity("FriendsApp.API.Models.User", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<byte[]>("PasswordHash");
