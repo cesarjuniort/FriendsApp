@@ -3,7 +3,7 @@ namespace FriendsApp.API.Models
     
     public class User
     {        
-        public int Id {get;set;} //changed from string to int.
+        public int Id {get;set;}
         public string Username {get;set;}
         public byte[] PasswordHash {get;set;}
         public byte[] PasswordSalt {get;set;}
