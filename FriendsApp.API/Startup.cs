@@ -19,6 +19,7 @@ using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using FriendsApp.API.Helpers;
 using Microsoft.AspNetCore.Http;
+using AutoMapper;
 
 namespace FriendsApp.API
 {
@@ -40,6 +41,7 @@ namespace FriendsApp.API
                         opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                     });
             services.AddCors();
+            services.AddAutoMapper();
             services.AddTransient<Seed>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IFriendsRepository, FriendsRepository>();

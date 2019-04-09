@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
+using System.Collections.Generic;
 
 namespace FriendsApp.API.Controllers
 {
@@ -20,8 +22,10 @@ namespace FriendsApp.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IFriendsRepository repo;
-        public UsersController(IFriendsRepository repo)
+        private readonly IMapper mapper;
+        public UsersController(IFriendsRepository repo, IMapper mapper)
         {
+            this.mapper = mapper;
             this.repo = repo;
         }
 
@@ -29,14 +33,16 @@ namespace FriendsApp.API.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await repo.GetUsers();
-            return Ok(users);
+            var usersToReturn = mapper.Map<IEnumerable<UserForListDto>>(users);
+            return Ok(usersToReturn);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await repo.GetUser(id);
-            return Ok(user);
+            var usersToReturn = mapper.Map<UserForDetailDto>(user);
+            return Ok(usersToReturn);
         }
 
     }
