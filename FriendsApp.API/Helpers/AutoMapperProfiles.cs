@@ -21,7 +21,13 @@ namespace FriendsApp.API.Dtos
             CreateMap<User, UserForDetailDto>()
                 .ForMember(dest => dest.Age, map => {
                     map.MapFrom((s,d) => s.DateOfBirth.CalculateAge());
-                } );
+                } )
+                .ForMember(dest => dest.PhotoUrl, 
+                        map => {
+                            map.MapFrom(s => s.Photos.FirstOrDefault(p => p.IsMain).Url);
+                            }
+                );
+
             CreateMap<Photo, PhotosForDetailDto>();
         }
     }
