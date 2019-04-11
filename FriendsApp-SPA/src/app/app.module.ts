@@ -19,6 +19,8 @@ import { RouterModule } from '@angular/router';
 import { appRoutes } from './routes';
 import { MemberCardComponent } from './members/member-card/member-card.component';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
+import { MemberDetailResolver } from './resolvers/member-detail.resolver';
+import { MemberListResolver } from './resolvers/member-list.resolver';
 
 
 export function tokenGetter() {
@@ -56,7 +58,9 @@ export function tokenGetter() {
     )
   ],
   providers: [
-    ErrorInterceptorProvider
+    ErrorInterceptorProvider,
+    MemberDetailResolver,
+    MemberListResolver
   ],
   bootstrap: [AppComponent]
 })
