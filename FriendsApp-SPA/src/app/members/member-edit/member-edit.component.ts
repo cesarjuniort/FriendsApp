@@ -19,4 +19,8 @@ export class MemberEditComponent implements OnInit {
     this.route.data.subscribe(data => this.user = data['userDataFromResolver']);
   }
 
+  updateUser(){
+    console.log('update: ', this.user);
+  }
+
 }
