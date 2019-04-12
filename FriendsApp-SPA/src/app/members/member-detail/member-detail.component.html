@@ -1,5 +1,8 @@
 <div *ngIf="user" class="container mt-4">
   <div class="row">
+    <h2>{{user.knownAs}}'s profile</h2>
+  </div>
+  <div class="row">
     <div class="col-sm-4">
       <div class="card">
         <img class="card-img-top img-thumbnail" src="{{user?.photoUrl}}" alt="{{user.knownAs}}">
@@ -13,7 +16,7 @@
             <p>{{user.age}}</p>
           </div>
           <div>
-            <strong>Last Active:</strong>
+            <strong>Last seen:</strong>
             <p>{{user.lastActive | date:'short'}}</p>
           </div>
           <div>
@@ -48,7 +51,7 @@
           </tab>
           <tab heading="Photos">
             <h4>{{user.knownAs}}'s Photos</h4>
-            <p>The photos will be shown here...</p>
+            <ngx-gallery [options]="galleryOptions" [images]="galleryImages"></ngx-gallery>
           </tab>
           <tab heading="Messages">
             <h4>{{user.knownAs}}'s Photos</h4>
