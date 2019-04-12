@@ -45,5 +45,25 @@ namespace FriendsApp.API.Controllers
             return Ok(usersToReturn);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userUpdateDto)
+        {
+            // verify that the user is updating its own profile.
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var userFromRepo = await repo.GetUser(id);
+
+            mapper.Map(userUpdateDto, userFromRepo);
+            if (await repo.SaveAll()) {
+                return NoContent();
+            } else {
+                throw new Exception($"An error occurred while saving the user with id {id}.");
+            }
+        }
+
+
     }
 }
