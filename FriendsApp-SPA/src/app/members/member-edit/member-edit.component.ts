@@ -4,6 +4,7 @@ import { UserService } from 'src/app/services/user.service';
 import { AlertifyService } from 'src/app/services/alertify.service';
 import { ActivatedRoute } from '@angular/router';
 import { NgForm } from '@angular/forms';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-member-edit',
@@ -23,15 +24,21 @@ export class MemberEditComponent implements OnInit {
 
 
   constructor(private userService: UserService, private alertify: AlertifyService,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute, private authService: AuthService) { }
 
   ngOnInit() {
     this.route.data.subscribe(data => this.user = data['userDataFromResolver']);
   }
 
   updateUser(){
-    console.log('update: ', this.user);
-    this.editForm.reset(this.user);
+    this.userService.updateUser(this.authService.decodedToken.nameid,
+      this.user).subscribe(
+        next => {
+          this.editForm.reset(this.user);
+          this.alertify.success('Your profile was updated successfully!');
+        },
+        err => {this.alertify.error(err);}
+      );
   }
 
 }
