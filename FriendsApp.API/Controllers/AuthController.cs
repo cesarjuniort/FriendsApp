@@ -9,6 +9,7 @@ using System;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
+using AutoMapper;
 
 namespace FriendsApp.API.Controllers
 {
@@ -18,9 +19,11 @@ namespace FriendsApp.API.Controllers
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
+        private readonly IMapper mapper;
 
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
+            this.mapper = mapper;
             _repo = repo;
             _config = config;
         }
@@ -80,9 +83,12 @@ namespace FriendsApp.API.Controllers
             // writing the token into the response
             var tokenToBeDispatchedToClient = tokenHandler.CreateToken(tokenDescriptor);
 
+            var user4List = mapper.Map<UserForListDto>(userFromRepo);
+
             return Ok(new
             {
-                token = tokenHandler.WriteToken(tokenToBeDispatchedToClient)
+                token = tokenHandler.WriteToken(tokenToBeDispatchedToClient),
+                user = user4List
             });
         }
     }
