@@ -48,7 +48,7 @@ namespace FriendsApp.API.Controllers
         public async Task<IActionResult> AddPhotoForUser(int userId, [FromForm] PhotoForCreationDto photoForCreationDto)
         {
             // verify that the user is updating its own profile.
-            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (IsUserAuthorizedAndSelf(userId) == false)
             {
                 return Unauthorized();
             }
@@ -93,5 +93,42 @@ namespace FriendsApp.API.Controllers
             return BadRequest("Could not add the photo");
         }
 
+        [HttpPost("{id}/setAsMain")]
+        public async Task<IActionResult> SetMainPhoto(int userId, int id)
+        {
+            if (IsUserAuthorizedAndSelf(userId) == false)
+            {
+                return Unauthorized();
+            }
+            // verify that the photo id (id param) belongs to the user.
+            var user = await repo.GetUser(userId);
+            if(!user.Photos.Any(p => p.Id == id))
+            {
+                return Unauthorized();
+            }
+
+            var photoFromRepo = await repo.GetPhoto(id);
+            if(photoFromRepo.IsMain) {
+                return BadRequest("This is already the main photo.");
+            }
+            photoFromRepo.IsMain = true;
+            var currentMainPhoto = await repo.GetMainPhotoForUser(userId);
+            if(currentMainPhoto != null){
+                currentMainPhoto.IsMain = false;
+            }
+
+            if(await repo.SaveAll()) {
+                return NoContent();
+            }
+            return BadRequest("The photo could not be set as Main.");
+
+        }
+
+        private bool IsUserAuthorizedAndSelf(int uid){
+            if (uid == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return true;
+            else
+                return false;
+        }
     }
 }
