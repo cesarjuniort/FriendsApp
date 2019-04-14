@@ -1,8 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Photo } from 'src/app/models/photo';
 import { FileUploader } from 'ng2-file-upload';
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/services/auth.service';
+import { UserService } from 'src/app/services/user.service';
+import { AlertifyService } from 'src/app/services/alertify.service';
 
 @Component({
   selector: 'app-photo-editor',
@@ -11,14 +13,16 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class PhotoEditorComponent implements OnInit {
   @Input() photos: Photo[];
+  @Output() memberPhotoChange = new EventEmitter<string>();
 
   apiBaseUrl = environment.apiUrl;
 
   uploader: FileUploader; // = new FileUploader({ url: URL });
   hasBaseDropZoneOver = false;
+  currentMainPhoto: Photo;
 
-
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private alertify: AlertifyService,
+    private userService: UserService) { }
 
   ngOnInit() {
     this.initializeUploader();
@@ -42,26 +46,40 @@ export class PhotoEditorComponent implements OnInit {
     this.uploader.onAfterAddingFile = (f) => { f.withCredentials = false; } // fixes an issue with the component and Cors.
 
     // when the upload completes, push the new photo into the array so that is visible to the user without having to do a refresh.
-    this.uploader.onSuccessItem = (item, response, status,headers) => {
+    this.uploader.onSuccessItem = (item, response, status, headers) => {
       const photo = this.buildPhotoFromResponse(response);
-      if(photo) {
+      if (photo) {
         this.photos.push(photo);
       }
     }
   }
 
   private buildPhotoFromResponse(rawResponse: string): Photo {
-    if(rawResponse) {
+    if (rawResponse) {
       const res: Photo = JSON.parse(rawResponse);
       return {
         id: res.id,
         url: res.url,
         dateAdded: res.dateAdded,
         description: res.description,
-        isMain : res.isMain
+        isMain: res.isMain
       };
     }
     return null;
+  }
+
+  setMainPhoto(photo: Photo) {
+    this.userService.setMainPhoto(this.authService.decodedToken.nameid, photo.id)
+      .subscribe(next => { 
+        this.currentMainPhoto = this.photos.filter(p => p.isMain === true)[0];
+        if(this.currentMainPhoto){
+          this.currentMainPhoto.isMain = false;
+        }
+        photo.isMain = true;
+        this.memberPhotoChange.emit(photo.url);
+        this.alertify.success('Photo set to main successfully!');
+      },
+        error => { this.alertify.error(error); });
   }
 
 }
