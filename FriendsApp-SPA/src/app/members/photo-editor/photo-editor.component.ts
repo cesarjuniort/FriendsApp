@@ -13,8 +13,8 @@ import { AlertifyService } from 'src/app/services/alertify.service';
 })
 export class PhotoEditorComponent implements OnInit {
   @Input() photos: Photo[];
-  @Output() memberPhotoChange = new EventEmitter<string>();
-
+  // @Output() memberPhotoChange = new EventEmitter<string>();
+  photoUrl: string;
   apiBaseUrl = environment.apiUrl;
 
   uploader: FileUploader; // = new FileUploader({ url: URL });
@@ -76,7 +76,8 @@ export class PhotoEditorComponent implements OnInit {
           this.currentMainPhoto.isMain = false;
         }
         photo.isMain = true;
-        this.memberPhotoChange.emit(photo.url);
+        // this.memberPhotoChange.emit(photo.url);
+        this.authService.changeMemberPhoto(photo.url);
         this.alertify.success('Photo set to main successfully!');
       },
         error => { this.alertify.error(error); });
