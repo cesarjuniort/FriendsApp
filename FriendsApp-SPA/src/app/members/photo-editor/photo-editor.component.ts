@@ -70,9 +70,9 @@ export class PhotoEditorComponent implements OnInit {
 
   setMainPhoto(photo: Photo) {
     this.userService.setMainPhoto(this.authService.decodedToken.nameid, photo.id)
-      .subscribe(next => { 
+      .subscribe(next => {
         this.currentMainPhoto = this.photos.filter(p => p.isMain === true)[0];
-        if(this.currentMainPhoto){
+        if (this.currentMainPhoto) {
           this.currentMainPhoto.isMain = false;
         }
         photo.isMain = true;
@@ -81,6 +81,19 @@ export class PhotoEditorComponent implements OnInit {
         this.alertify.success('Photo set to main successfully!');
       },
         error => { this.alertify.error(error); });
+  }
+
+  deletePhoto(photo: Photo) {
+    this.alertify.confirm('Delete this photo?',
+      () => {
+        this.userService.deletePhoto(this.authService.decodedToken.nameid, photo.id).subscribe(
+          () => { /* photo successfully deleted from the backend. */
+            this.photos.splice(this.photos.findIndex(p => p.id === photo.id, 1));
+            this.alertify.success('The photo was deleted successfully.');
+          },
+          (err) => { this.alertify.error(err) }
+        )
+      });
   }
 
 }
