@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -67,7 +68,9 @@ namespace FriendsApp.API.Controllers
                     };
                     uploadResult = cloudinary.Upload(uploadParams);
                 }
-            } else {
+            }
+            else
+            {
                 return BadRequest();
             }
 
@@ -102,29 +105,71 @@ namespace FriendsApp.API.Controllers
             }
             // verify that the photo id (id param) belongs to the user.
             var user = await repo.GetUser(userId);
-            if(!user.Photos.Any(p => p.Id == id))
+            if (!user.Photos.Any(p => p.Id == id))
             {
                 return Unauthorized();
             }
 
             var photoFromRepo = await repo.GetPhoto(id);
-            if(photoFromRepo.IsMain) {
+            if (photoFromRepo.IsMain)
+            {
                 return BadRequest("This is already the main photo.");
             }
             photoFromRepo.IsMain = true;
             var currentMainPhoto = await repo.GetMainPhotoForUser(userId);
-            if(currentMainPhoto != null){
+            if (currentMainPhoto != null)
+            {
                 currentMainPhoto.IsMain = false;
             }
 
-            if(await repo.SaveAll()) {
+            if (await repo.SaveAll())
+            {
                 return NoContent();
             }
             return BadRequest("The photo could not be set as Main.");
 
         }
 
-        private bool IsUserAuthorizedAndSelf(int uid){
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoto(int userId, int id)
+        {
+            if (IsUserAuthorizedAndSelf(userId) == false)
+            {
+                return Unauthorized();
+            }
+            // verify that the photo id (id param) belongs to the user.
+            var user = await repo.GetUser(userId);
+            if (!user.Photos.Any(p => p.Id == id))
+            {
+                return Unauthorized();
+            }
+
+            var photoFromRepo = await repo.GetPhoto(id);
+
+            if (string.IsNullOrWhiteSpace(photoFromRepo.PublicId) == false) /* photo is in Cloudinary */
+            {
+                var deleteParams = new DeletionParams(photoFromRepo.PublicId);
+                var deletionResult = cloudinary.Destroy(deleteParams);
+                if (deletionResult.Result.Equals("ok", StringComparison.InvariantCultureIgnoreCase) == false)
+                {                 
+                    return BadRequest("Fail to delete the selected photo (from Cloudinary).");
+                }
+            }
+            repo.Delete(photoFromRepo);
+            if (await repo.SaveAll())
+            {
+                return Ok();
+            }
+            return BadRequest("Fail to delete the selected photo.");
+
+
+
+
+
+
+        }
+        private bool IsUserAuthorizedAndSelf(int uid)
+        {
             if (uid == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return true;
             else
