@@ -34,6 +34,8 @@ namespace FriendsApp.API.Dtos
 
             CreateMap<Photo,PhotoForReturnDto>();
             CreateMap<PhotoForCreationDto,Photo>();
+
+            CreateMap<UserForRegisterDto, User>();
         }
     }
 }

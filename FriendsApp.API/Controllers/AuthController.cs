@@ -29,23 +29,21 @@ namespace FriendsApp.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserForRegisterDto user)
+        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
             // TODO: Validate request.
 
-            user.Username = user.Username.ToLower();
-            if (await _repo.UserExists(user.Username))
+            userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
+            if (await _repo.UserExists(userForRegisterDto.Username))
                 return BadRequest("Username already exists.");
 
-            var userToCreate = new User
-            {
-                Username = user.Username
-            };
+            var userToCreate = mapper.Map<User>(userForRegisterDto);
 
-            var createdUser = await _repo.Register(userToCreate, user.Password);
+            var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
 
             //TODO: Return using CreatedAtRoute()
-            return StatusCode(201);
+            return CreatedAtRoute("GetUser", new {controller="Users", id = createdUser.Id},
+                mapper.Map<UserForDetailDto>(createdUser));
         }
 
         [HttpPost("login")]
