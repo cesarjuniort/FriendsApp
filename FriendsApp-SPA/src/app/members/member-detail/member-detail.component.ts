@@ -26,7 +26,7 @@ export class MemberDetailComponent implements OnInit {
     this.configureGallery();
   }
 
-  private configureGallery(){
+  private configureGallery() {
     this.galleryOptions = [{
       width: '500px',
       height: '500px',
