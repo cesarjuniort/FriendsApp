@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FriendsApp.API.Helpers;
 using FriendsApp.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,9 +31,10 @@ namespace FriendsApp.API.Data
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<PagedList<User>> GetUsers(PageRequestUserParams pageInfo)
         {
-            return await context.Users.Include(p=>p.Photos).ToListAsync();
+            var users = context.Users.Include(p=>p.Photos);
+            return await PagedList<User>.CreateAsync(users,pageInfo.PageNumber,pageInfo.PageSize);
         }
 
         public async Task<bool> SaveAll()
