@@ -51,6 +51,9 @@ export class PhotoEditorComponent implements OnInit {
       if (photo) {
         this.photos.push(photo);
       }
+      if (photo.isMain) {
+        this.authService.changeMemberPhoto(photo.url);
+      }
     }
   }
 
