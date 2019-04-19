@@ -34,6 +34,15 @@ namespace FriendsApp.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery] PageRequestUserParams pageRequestPrms)
         {
+
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userFromRepo = await repo.GetUser(currentUserId);
+            pageRequestPrms.UserId = currentUserId;
+            if(string.IsNullOrEmpty(pageRequestPrms.Gender)) {
+                pageRequestPrms.Gender = (userFromRepo.Gender == "male" ? "female":"male");
+            }
+
+
             var users = await repo.GetUsers(pageRequestPrms);
             var usersToReturn = mapper.Map<IEnumerable<UserForListDto>>(users);
             Response.AddPagination(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);

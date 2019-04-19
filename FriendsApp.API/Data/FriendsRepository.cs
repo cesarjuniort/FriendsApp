@@ -33,7 +33,9 @@ namespace FriendsApp.API.Data
 
         public async Task<PagedList<User>> GetUsers(PageRequestUserParams pageInfo)
         {
-            var users = context.Users.Include(p=>p.Photos);
+            var users = context.Users.Include(p=>p.Photos).AsQueryable();
+            users = users.Where(u => u.Id != pageInfo.UserId);
+            users = users.Where(u => u.Gender == pageInfo.Gender); // that could be combined with previous line, but wanted to keep it separated to remind that 'where' predicates can be combined in chunks, very powerful stuff.
             return await PagedList<User>.CreateAsync(users,pageInfo.PageNumber,pageInfo.PageSize);
         }
 
