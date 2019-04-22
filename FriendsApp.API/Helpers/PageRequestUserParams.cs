@@ -17,6 +17,9 @@ namespace FriendsApp.API.Helpers
         public int MinAge {get;set;}
         public int MaxAge {get;set;}
 
+        public string OrderBy {get;set;}
+
+
         
     }
 }
