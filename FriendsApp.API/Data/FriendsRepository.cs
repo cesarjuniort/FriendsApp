@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,6 +37,9 @@ namespace FriendsApp.API.Data
             var users = context.Users.Include(p=>p.Photos).AsQueryable();
             users = users.Where(u => u.Id != pageInfo.UserId);
             users = users.Where(u => u.Gender == pageInfo.Gender); // that could be combined with previous line, but wanted to keep it separated to remind that 'where' predicates can be combined in chunks, very powerful stuff.
+            var minDBO = DateTime.Today.AddYears(-pageInfo.MinAge);
+            var maxDBO = DateTime.Today.AddYears(-pageInfo.MaxAge);
+            users = users.Where(u => u.DateOfBirth<= minDBO && u.DateOfBirth >= maxDBO);
             return await PagedList<User>.CreateAsync(users,pageInfo.PageNumber,pageInfo.PageSize);
         }
 
