@@ -72,5 +72,10 @@ namespace FriendsApp.API.Data
             var photo = await context.Photos.Where(p => p.UserId == userId && p.IsMain).FirstOrDefaultAsync();
             return photo;
         }
+
+        public async Task<Like> GetLike(int userId, int recipientId)
+        {
+            return await context.Likes.FirstOrDefaultAsync(u => u.LikerId == userId && u.LikeeId == recipientId);
+        }
     }
 }

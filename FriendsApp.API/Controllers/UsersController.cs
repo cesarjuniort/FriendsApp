@@ -76,6 +76,44 @@ namespace FriendsApp.API.Controllers
             }
         }
 
+        [HttpPost("{id}/like/{recipientId}")]
+        public async Task<IActionResult> LikeUser(int id, int recipientId)
+        {
+            // verify that the user is logged in and the id parameter is set for itself.
+            if (IsUserAuthorizedAndSelf(id) == false)
+            {
+                return Unauthorized();
+            }
+
+            if(await repo.GetUser(recipientId) == null)
+            {
+                return NotFound();
+            }
+            var like = await repo.GetLike(id,recipientId);
+            if(like != null)
+            {
+                return BadRequest("Already liked this user.");
+            }
+            like = new Like{
+                LikerId = id, LikeeId = recipientId
+            };
+            repo.Add<Like>(like);
+            if(await repo.SaveAll())
+            {
+                return Ok();
+            }
+            return BadRequest("Fail to like this user.");
+            
+        }
+
+        private bool IsUserAuthorizedAndSelf(int uid)
+        {
+            if (uid == int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return true;
+            else
+                return false;
+        }
+
 
     }
 }
